@@ -1,13 +1,13 @@
-package main
+package config
 
 import "github.com/kelseyhightower/envconfig"
 
-type config struct {
+type Config struct {
 	RedisURL string `envconfig:"REDIS_URL" default:"localhost:6379"`
 }
 
-func newConfig() *config {
-	var conf config
+func NewConfig() *Config {
+	var conf Config
 
 	err := envconfig.Process("", &conf)
 	if err != nil {

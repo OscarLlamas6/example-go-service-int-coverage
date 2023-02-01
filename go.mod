@@ -1,4 +1,4 @@
-module github.com/cjfinnell/example-go-service-int-coverage
+module e2e-test
 
 go 1.18
 

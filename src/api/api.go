@@ -1,6 +1,7 @@
-package main
+package api
 
 import (
+	"e2e-test/src/cache"
 	"errors"
 	"fmt"
 	"log"
@@ -17,7 +18,7 @@ const (
 	routeKeyValue = "/:" + paramKey + "/:" + paramValue
 )
 
-func (s *server) handleGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (s *server) HandleGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	key := ps.ByName(paramKey)
 	if key == "" {
 		http.Error(w, "missing key", http.StatusBadRequest)
@@ -25,8 +26,8 @@ func (s *server) handleGet(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	value, err := s.redis.Get(key)
-	if errors.Is(err, ErrNotFound) {
+	value, err := s.Redis.Get(key)
+	if errors.Is(err, cache.ErrNotFound) {
 		http.Error(w, "key not found", http.StatusNotFound)
 
 		return
@@ -44,7 +45,7 @@ func (s *server) handleGet(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 }
 
-func (s *server) handleSet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (s *server) HandleSet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	key := ps.ByName(paramKey)
 	if key == "" {
 		http.Error(w, "missing key", http.StatusBadRequest)
@@ -59,7 +60,7 @@ func (s *server) handleSet(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	if err := s.redis.Set(key, value); err != nil {
+	if err := s.Redis.Set(key, value); err != nil {
 		http.Error(w, fmt.Sprintf("failed to set value for key: %s", err), http.StatusInternalServerError)
 
 		return
@@ -70,7 +71,7 @@ func (s *server) handleSet(w http.ResponseWriter, r *http.Request, ps httprouter
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (s *server) handleDel(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (s *server) HandleDel(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	key := ps.ByName(paramKey)
 	if key == "" {
 		http.Error(w, "missing key", http.StatusBadRequest)
@@ -78,7 +79,7 @@ func (s *server) handleDel(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	if err := s.redis.Del(key); err != nil {
+	if err := s.Redis.Del(key); err != nil {
 		http.Error(w, fmt.Sprintf("failed to delete key: %s", err), http.StatusInternalServerError)
 
 		return

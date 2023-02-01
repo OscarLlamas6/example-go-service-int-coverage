@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"errors"
@@ -7,7 +7,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/cjfinnell/example-go-service-int-coverage/mocks"
+	"e2e-test/mocks"
+	"e2e-test/src/cache"
+
 	"github.com/julienschmidt/httprouter"
 	"github.com/matryer/is"
 )
@@ -39,7 +41,7 @@ func TestGet(t *testing.T) {
 		},
 		{
 			name:           "value does not exist",
-			redisGetErr:    ErrNotFound,
+			redisGetErr:    cache.ErrNotFound,
 			expectedStatus: http.StatusNotFound,
 			expectedResp:   "key not found\n",
 		},
@@ -54,13 +56,13 @@ func TestGet(t *testing.T) {
 
 			mockRedis.On("Get", testKey).Return(tc.redisGetResp, tc.redisGetErr)
 
-			srv := &server{redis: mockRedis}
+			srv := &server{Redis: mockRedis}
 
 			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/%s", testKey), nil)
 			w := httptest.NewRecorder()
 
 			router := httprouter.New()
-			router.GET(routeKey, srv.handleGet)
+			router.GET(routeKey, srv.HandleGet)
 			router.ServeHTTP(w, req)
 
 			is.Equal(tc.expectedStatus, w.Code)
@@ -99,13 +101,13 @@ func TestSet(t *testing.T) {
 
 			mockRedis.On("Set", testKey, testValue).Return(tc.redisSetErr)
 
-			srv := &server{redis: mockRedis}
+			srv := &server{Redis: mockRedis}
 
 			req := httptest.NewRequest(http.MethodPost, fmt.Sprintf("/%s/%s", testKey, testValue), nil)
 			w := httptest.NewRecorder()
 
 			router := httprouter.New()
-			router.POST(routeKeyValue, srv.handleSet)
+			router.POST(routeKeyValue, srv.HandleSet)
 			router.ServeHTTP(w, req)
 
 			is.Equal(tc.expectedStatus, w.Code)
@@ -143,13 +145,13 @@ func TestDel(t *testing.T) {
 
 			mockRedis.On("Del", testKey).Return(tc.redisSetErr)
 
-			srv := &server{redis: mockRedis}
+			srv := &server{Redis: mockRedis}
 
 			req := httptest.NewRequest(http.MethodDelete, fmt.Sprintf("/%s", testKey), nil)
 			w := httptest.NewRecorder()
 
 			router := httprouter.New()
-			router.DELETE(routeKey, srv.handleDel)
+			router.DELETE(routeKey, srv.HandleDel)
 			router.ServeHTTP(w, req)
 
 			is.Equal(tc.expectedStatus, w.Code)

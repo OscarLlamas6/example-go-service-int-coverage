@@ -1,7 +1,8 @@
-package main
+package cache
 
 import (
 	"context"
+	"e2e-test/src/config"
 	"errors"
 	"fmt"
 	"io"
@@ -23,7 +24,7 @@ type redisWrap struct {
 	client *redis.Client
 }
 
-func newRedisWrap(conf *config) *redisWrap {
+func NewRedisWrap(conf *config.Config) *redisWrap {
 	return &redisWrap{
 		client: redis.NewClient(&redis.Options{
 			Addr: conf.RedisURL,

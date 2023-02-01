@@ -1,13 +1,17 @@
 package main
 
-import "log"
+import (
+	"e2e-test/src/api"
+	"e2e-test/src/config"
+	"log"
+)
 
 func main() {
-	conf := newConfig()
+	conf := config.NewConfig()
 
-	srv := newServer(conf)
+	srv := api.NewServer(conf)
 
-	if err := srv.run(); err != nil {
+	if err := srv.Run(); err != nil {
 		log.Fatalf("server exited with error: %s", err)
 	}
 }

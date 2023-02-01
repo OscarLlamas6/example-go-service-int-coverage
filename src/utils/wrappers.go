@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"log"
@@ -7,7 +7,7 @@ import (
 
 const authHeader = "Authorization"
 
-func authWrap(next http.Handler) http.HandlerFunc {
+func AuthWrap(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		authValue := r.Header.Get(authHeader)
 
@@ -28,7 +28,7 @@ func authWrap(next http.Handler) http.HandlerFunc {
 	}
 }
 
-func requestLogger(next http.Handler) http.HandlerFunc {
+func RequestLogger(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s %s", r.Method, r.URL)
 		next.ServeHTTP(w, r)

@@ -1,7 +1,9 @@
 //nolint:lll
-package main
+package src
 
 import (
+	"e2e-test/src/api"
+	"e2e-test/src/config"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -18,7 +20,7 @@ func FuzzIntegration(f *testing.F) {
 
 	is := is.New(f)
 
-	srv := newServer(&config{RedisURL: "redis:6379"})
+	srv := api.NewServer(&config.Config{RedisURL: "redis:6379"})
 
 	f.Add("key", "value")
 	f.Add("k", "v")
@@ -62,7 +64,7 @@ func FuzzIntegration(f *testing.F) {
 				if step.auth {
 					req.Header.Set("Authorization", "test-auth")
 				}
-				srv.router.ServeHTTP(w, req)
+				srv.Router.ServeHTTP(w, req)
 				is.Equal(step.expectedStatus, w.Code)
 				if step.expectedResp != "" {
 					is.Equal(step.expectedResp, strings.TrimSpace(w.Body.String()))
